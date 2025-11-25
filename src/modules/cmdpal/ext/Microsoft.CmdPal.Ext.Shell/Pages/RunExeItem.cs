@@ -2,8 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.CmdPal.Core.Common.Services;
-using Microsoft.CmdPal.Ext.Shell.Helpers;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using Windows.Storage.Streams;
@@ -15,7 +13,6 @@ internal sealed partial class RunExeItem : ListItem
 {
     private readonly Lazy<IconInfo> _icon;
     private readonly Action<string>? _addToHistory;
-    private readonly ITelemetryService? _telemetryService;
 
     public override IIconInfo? Icon { get => _icon.Value; set => base.Icon = value; }
 
@@ -31,8 +28,7 @@ internal sealed partial class RunExeItem : ListItem
         string exe,
         string args,
         string fullExePath,
-        Action<string>? addToHistory,
-        ITelemetryService? telemetryService = null)
+        Action<string>? addToHistory)
     {
         FullExePath = fullExePath;
         Exe = exe;
@@ -52,7 +48,6 @@ internal sealed partial class RunExeItem : ListItem
         });
 
         _addToHistory = addToHistory;
-        _telemetryService = telemetryService;
 
         UpdateArgs(args);
 
@@ -105,8 +100,6 @@ internal sealed partial class RunExeItem : ListItem
         _addToHistory?.Invoke(FullString);
 
         var success = ShellHelpers.OpenInShell(FullExePath, _args);
-
-        _telemetryService?.LogRunCommand(FullString, false, success);
     }
 
     public void RunAsAdmin()
@@ -114,8 +107,6 @@ internal sealed partial class RunExeItem : ListItem
         _addToHistory?.Invoke(FullString);
 
         var success = ShellHelpers.OpenInShell(FullExePath, _args, runAs: ShellHelpers.ShellRunAsType.Administrator);
-
-        _telemetryService?.LogRunCommand(FullString, true, success);
     }
 
     public void RunAsOther()
@@ -123,7 +114,5 @@ internal sealed partial class RunExeItem : ListItem
         _addToHistory?.Invoke(FullString);
 
         var success = ShellHelpers.OpenInShell(FullExePath, _args, runAs: ShellHelpers.ShellRunAsType.OtherUser);
-
-        _telemetryService?.LogRunCommand(FullString, false, success);
     }
 }

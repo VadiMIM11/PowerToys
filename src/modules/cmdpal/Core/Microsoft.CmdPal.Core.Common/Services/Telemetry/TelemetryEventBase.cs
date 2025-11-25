@@ -5,7 +5,7 @@
 using Microsoft.PowerToys.Telemetry;
 using Microsoft.PowerToys.Telemetry.Events;
 
-namespace Microsoft.CmdPal.UI.Services.Telemetry;
+namespace Microsoft.CmdPal.Core.Common.Services.Telemetry;
 
 public abstract class TelemetryEventBase : EventBase, IEvent
 {

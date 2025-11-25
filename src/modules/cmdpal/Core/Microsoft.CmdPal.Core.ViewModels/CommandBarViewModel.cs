@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Core.ViewModels.Messages;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Microsoft.Extensions.Logging;
 using Windows.System;
 
 namespace Microsoft.CmdPal.Core.ViewModels;
@@ -13,6 +14,8 @@ namespace Microsoft.CmdPal.Core.ViewModels;
 public partial class CommandBarViewModel : ObservableObject,
     IRecipient<UpdateCommandBarMessage>
 {
+    private readonly ILogger _logger;
+
     public ICommandBarContext? SelectedItem
     {
         get => field;
@@ -48,8 +51,9 @@ public partial class CommandBarViewModel : ObservableObject,
     [ObservableProperty]
     public partial PageViewModel? CurrentPage { get; set; }
 
-    public CommandBarViewModel()
+    public CommandBarViewModel(ILogger logger)
     {
+        _logger = logger;
         WeakReferenceMessenger.Default.Register<UpdateCommandBarMessage>(this);
     }
 

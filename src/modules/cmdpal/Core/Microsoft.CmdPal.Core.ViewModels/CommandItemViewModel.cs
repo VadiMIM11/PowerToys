@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.CmdPal.Core.Common;
 using Microsoft.CmdPal.Core.ViewModels.Messages;
 using Microsoft.CmdPal.Core.ViewModels.Models;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.CmdPal.Core.ViewModels;
 
@@ -17,6 +17,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
     public ExtensionObject<ICommandItem> Model => _commandItemModel;
 
     private readonly ExtensionObject<ICommandItem> _commandItemModel = new(null);
+    private readonly ILogger _logger;
     private CommandContextItemViewModel? _defaultCommandContextItemViewModel;
 
     internal InitializedState Initialized { get; private set; } = InitializedState.Uninitialized;
@@ -86,10 +87,11 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         _errorIcon.InitializeProperties();
     }
 
-    public CommandItemViewModel(ExtensionObject<ICommandItem> item, WeakReference<IPageContext> errorContext)
+    public CommandItemViewModel(ExtensionObject<ICommandItem> item, WeakReference<IPageContext> errorContext, ILogger<CommandItemViewModel> logger)
         : base(errorContext)
     {
         _commandItemModel = item;
+        _logger = logger;
         Command = new(null, errorContext);
     }
 
@@ -231,7 +233,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         }
         catch (Exception ex)
         {
-            CoreLogger.LogError("error fast initializing CommandItemViewModel", ex);
+            Log_ErrorFastInitializingCommandItemViewModel(ex);
             Command = new(null, PageContext);
             _itemTitle = "Error";
             Subtitle = "Item failed to load";
@@ -253,7 +255,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         catch (Exception ex)
         {
             Initialized |= InitializedState.Error;
-            CoreLogger.LogError("error slow initializing CommandItemViewModel", ex);
+            Log_ErrorSlowInitializingCommandItemViewModel(ex);
         }
 
         return false;
@@ -268,7 +270,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         }
         catch (Exception ex)
         {
-            CoreLogger.LogError("error initializing CommandItemViewModel", ex);
+            Log_ErrorSlowInitializingCommandItemViewModel(ex);
             Command = new(null, PageContext);
             _itemTitle = "Error";
             Subtitle = "Item failed to load";
@@ -464,6 +466,15 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         base.SafeCleanup();
         Initialized |= InitializedState.CleanedUp;
     }
+
+    [LoggerMessage(level: LogLevel.Error, message: "error fast initializing CommandItemViewModel")]
+    partial void Log_ErrorFastInitializingCommandItemViewModel(Exception ex);
+
+    [LoggerMessage(level: LogLevel.Error, message: "error slow initializing CommandItemViewModel")]
+    partial void Log_ErrorSlowInitializingCommandItemViewModel(Exception ex);
+
+    [LoggerMessage(level: LogLevel.Error, message: "error initializing CommandItemViewModel")]
+    partial void Log_ErrorInitializingCommandItemViewModel(Exception ex);
 }
 
 [Flags]

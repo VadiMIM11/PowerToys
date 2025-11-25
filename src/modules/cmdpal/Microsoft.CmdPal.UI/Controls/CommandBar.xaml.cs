@@ -20,7 +20,7 @@ public sealed partial class CommandBar : UserControl,
     IRecipient<TryCommandKeybindingMessage>,
     ICurrentPageAware
 {
-    public CommandBarViewModel ViewModel { get; } = new();
+    private CommandBarViewModel viewModel;
 
     public PageViewModel? CurrentPageViewModel
     {
@@ -32,9 +32,10 @@ public sealed partial class CommandBar : UserControl,
     public static readonly DependencyProperty CurrentPageViewModelProperty =
         DependencyProperty.Register(nameof(CurrentPageViewModel), typeof(PageViewModel), typeof(CommandBar), new PropertyMetadata(null));
 
-    public CommandBar()
+    public CommandBar(CommandBarViewModel commandBarViewModel)
     {
         this.InitializeComponent();
+        viewModel = commandBarViewModel;
 
         // RegisterAll isn't AOT compatible
         WeakReferenceMessenger.Default.Register<OpenContextMenuMessage>(this);
@@ -44,7 +45,7 @@ public sealed partial class CommandBar : UserControl,
 
     public void Receive(OpenContextMenuMessage message)
     {
-        if (!ViewModel.ShouldShowContextMenu)
+        if (!viewModel.ShouldShowContextMenu)
         {
             return;
         }
@@ -90,12 +91,12 @@ public sealed partial class CommandBar : UserControl,
 
     public void Receive(TryCommandKeybindingMessage msg)
     {
-        if (!ViewModel.ShouldShowContextMenu)
+        if (!viewModel.ShouldShowContextMenu)
         {
             return;
         }
 
-        var result = ViewModel?.CheckKeybinding(msg.Ctrl, msg.Alt, msg.Shift, msg.Win, msg.Key);
+        var result = viewModel?.CheckKeybinding(msg.Ctrl, msg.Alt, msg.Shift, msg.Win, msg.Key);
 
         if (result == ContextKeybindingResult.Hide)
         {
@@ -115,13 +116,13 @@ public sealed partial class CommandBar : UserControl,
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS has a tendency to delete XAML bound methods over-aggressively")]
     private void PrimaryButton_Clicked(object sender, RoutedEventArgs e)
     {
-        ViewModel.InvokePrimaryCommand();
+        viewModel.InvokePrimaryCommand();
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS has a tendency to delete XAML bound methods over-aggressively")]
     private void SecondaryButton_Clicked(object sender, RoutedEventArgs e)
     {
-        ViewModel.InvokeSecondaryCommand();
+        viewModel.InvokeSecondaryCommand();
     }
 
     private void SettingsIcon_Clicked(object sender, RoutedEventArgs e)

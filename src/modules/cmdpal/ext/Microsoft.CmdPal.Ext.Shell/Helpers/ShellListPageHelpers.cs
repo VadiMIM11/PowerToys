@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text;
-using Microsoft.CmdPal.Core.Common.Services;
 using Microsoft.CmdPal.Ext.Shell.Pages;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
@@ -21,7 +20,7 @@ public class ShellListPageHelpers
         return ShellHelpers.FileExistInPath(filename, out fullPath, token ?? CancellationToken.None);
     }
 
-    internal static ListItem? ListItemForCommandString(string query, Action<string>? addToHistory, ITelemetryService? telemetryService)
+    internal static ListItem? ListItemForCommandString(string query, Action<string>? addToHistory)
     {
         var li = new ListItem();
 
@@ -63,7 +62,7 @@ public class ShellListPageHelpers
         if (exeExists)
         {
             // TODO we need to probably get rid of the settings for this provider entirely
-            var exeItem = ShellListPage.CreateExeItem(exe, args, fullExePath, addToHistory, telemetryService);
+            var exeItem = ShellListPage.CreateExeItem(exe, args, fullExePath, addToHistory);
             li.Command = exeItem.Command;
             li.Title = exeItem.Title;
             li.Subtitle = exeItem.Subtitle;
@@ -72,7 +71,7 @@ public class ShellListPageHelpers
         }
         else if (pathIsDir)
         {
-            var pathItem = new PathListItem(exe, query, addToHistory, telemetryService);
+            var pathItem = new PathListItem(exe, query, addToHistory);
             li.Command = pathItem.Command;
             li.Title = pathItem.Title;
             li.Subtitle = pathItem.Subtitle;
@@ -81,7 +80,7 @@ public class ShellListPageHelpers
         }
         else if (System.Uri.TryCreate(searchText, UriKind.Absolute, out var uri))
         {
-            li.Command = new OpenUrlWithHistoryCommand(searchText, addToHistory, telemetryService) { Result = CommandResult.Dismiss() };
+            li.Command = new OpenUrlWithHistoryCommand(searchText, addToHistory) { Result = CommandResult.Dismiss() };
             li.Title = searchText;
         }
         else

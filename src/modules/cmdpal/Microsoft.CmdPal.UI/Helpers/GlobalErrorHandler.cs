@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.CmdPal.Core.Common.Helpers;
+using Microsoft.CmdPal.UI.Services;
 using Microsoft.Extensions.Logging;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -63,7 +64,7 @@ internal sealed partial class GlobalErrorHandler
 
     private void HandleException(Exception ex, Context context)
     {
-        Log_UnhandledException(ex, context);
+        Log_UnhandledException()
 
         if (context == Context.MainThreadException)
         {
@@ -108,13 +109,11 @@ internal sealed partial class GlobalErrorHandler
 
         // Always store a copy in log directory, this way it is available for Bug Report Tool
         string? reportPath = null;
-        if (_logger is LogWrapper logWrapper)
-        {
-            if (logWrapper.CurrentVersionLogDirectoryPath != null)
-            {
-                reportPath = Save(report, name, logWrapper.CurrentVersionLogDirectoryPath);
-            }
-        }
+
+        // if (!string.IsNullOrEmpty(logWrapper.CurrentVersionLogDirectoryPath))
+        // {
+        //    reportPath = Save(report, name, logWrapper.CurrentVersionLogDirectoryPath);
+        // s}
 
         // Optionally store a copy on the desktop for user (in)convenience
         if (storeOnDesktop)
@@ -141,7 +140,7 @@ internal sealed partial class GlobalErrorHandler
             }
             catch (Exception ex)
             {
-                Log_FailedToStoreExceptionReport(ex);
+                Log_FailureToStoreExceptionReport(ex);
                 return null;
             }
         }
@@ -156,8 +155,8 @@ internal sealed partial class GlobalErrorHandler
         AppDomainUnhandledException,
     }
 
-    [LoggerMessage(level: LogLevel.Error, message: "Failed to store exception report")]
-    partial void Log_FailedToStoreExceptionReport(Exception ex);
+    [LoggerMessage(level: LogLevel.Error, Message = "Failed to store exception report")]
+    partial void Log_FailureToStoreExceptionReport(Exception ex);
 
     [LoggerMessage(level: LogLevel.Error, message: "Unhandled exception detected ({Context})")]
     partial void Log_UnhandledException(Exception ex, Context context);

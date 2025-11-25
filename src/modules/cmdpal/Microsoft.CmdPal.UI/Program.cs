@@ -2,9 +2,9 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using ManagedCommon;
 using Microsoft.CmdPal.Core.Common.Helpers;
 using Microsoft.CmdPal.Core.Common.Services;
+using Microsoft.CmdPal.Core.Common.Services.Telemetry;
 using Microsoft.CmdPal.Core.ViewModels;
 using Microsoft.CmdPal.Ext.Apps;
 using Microsoft.CmdPal.Ext.Bookmarks;
@@ -137,6 +137,7 @@ internal sealed partial class Program
         services.AddSingleton<ShellViewModel>();
         services.AddSingleton<IPageViewModelFactoryService, CommandPalettePageViewModelFactory>();
         services.AddTransient<SettingsViewModel>();
+        services.AddTransient<CommandBarViewModel>();
 
         // Views
         // App & MainWindow are singletons to ensure only one instance of each exists.

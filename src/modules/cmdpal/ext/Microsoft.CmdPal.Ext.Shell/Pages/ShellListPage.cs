@@ -15,7 +15,6 @@ internal sealed partial class ShellListPage : DynamicListPage, IDisposable
     private readonly List<ListItem> _currentHistoryItems = [];
 
     private readonly IRunHistoryService _historyService;
-    private readonly ITelemetryService? _telemetryService;
 
     private readonly Dictionary<string, ListItem> _currentPathItems = new();
 
@@ -32,15 +31,13 @@ internal sealed partial class ShellListPage : DynamicListPage, IDisposable
 
     public ShellListPage(
         ISettingsInterface settingsManager,
-        IRunHistoryService runHistoryService,
-        ITelemetryService? telemetryService)
+        IRunHistoryService runHistoryService)
     {
         Icon = Icons.RunV2Icon;
         Id = "com.microsoft.cmdpal.shell";
         Name = ResourceLoaderInstance.GetString("cmd_plugin_name");
         PlaceholderText = ResourceLoaderInstance.GetString("list_placeholder_text");
         _historyService = runHistoryService;
-        _telemetryService = telemetryService;
 
         EmptyContent = new CommandItem()
         {
@@ -290,12 +287,11 @@ internal sealed partial class ShellListPage : DynamicListPage, IDisposable
         }
 
         timer.Stop();
-        _telemetryService?.LogRunQuery(newSearch, GetItems().Length, (ulong)timer.ElapsedMilliseconds);
     }
 
-    private static ListItem PathToListItem(string path, string originalPath, string args = "", Action<string>? addToHistory = null, ITelemetryService? telemetryService = null)
+    private static ListItem PathToListItem(string path, string originalPath, string args = "", Action<string>? addToHistory = null)
     {
-        var pathItem = new PathListItem(path, originalPath, addToHistory, telemetryService);
+        var pathItem = new PathListItem(path, originalPath, addToHistory);
 
         if (pathItem.IsDirectory)
         {
@@ -305,7 +301,7 @@ internal sealed partial class ShellListPage : DynamicListPage, IDisposable
         // Is this path an executable? If so, then make a RunExeItem
         if (IsExecutable(path))
         {
-            var exeItem = new RunExeItem(Path.GetFileName(path), args, path, addToHistory, telemetryService)
+            var exeItem = new RunExeItem(Path.GetFileName(path), args, path, addToHistory)
             {
                 TextToSuggest = path,
             };
@@ -337,11 +333,11 @@ internal sealed partial class ShellListPage : DynamicListPage, IDisposable
             .ToArray();
     }
 
-    internal static ListItem CreateExeItem(string exe, string args, string fullExePath, Action<string>? addToHistory, ITelemetryService? telemetryService)
+    internal static ListItem CreateExeItem(string exe, string args, string fullExePath, Action<string>? addToHistory)
     {
         // PathToListItem will return a RunExeItem if it can find a executable.
         // It will ALSO add the file search commands to the RunExeItem.
-        return PathToListItem(fullExePath, exe, args, addToHistory, telemetryService);
+        return PathToListItem(fullExePath, exe, args, addToHistory);
     }
 
     private void CreateAndAddExeItems(string exe, string args, string fullExePath)
@@ -353,7 +349,7 @@ internal sealed partial class ShellListPage : DynamicListPage, IDisposable
         }
         else
         {
-            _exeItem = CreateExeItem(exe, args, fullExePath, AddToHistory, _telemetryService);
+            _exeItem = CreateExeItem(exe, args, fullExePath, AddToHistory);
         }
     }
 
@@ -521,7 +517,7 @@ internal sealed partial class ShellListPage : DynamicListPage, IDisposable
     {
         var hist = _historyService.GetRunHistory();
         var histItems = hist
-            .Select(h => (h, ShellListPageHelpers.ListItemForCommandString(h, AddToHistory, _telemetryService)))
+            .Select(h => (h, ShellListPageHelpers.ListItemForCommandString(h, AddToHistory)))
             .Where(tuple => tuple.Item2 is not null)
             .Select(tuple => (tuple.h, tuple.Item2!))
             .ToList();

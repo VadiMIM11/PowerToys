@@ -4,7 +4,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
-using Microsoft.CmdPal.UI.Services.Telemetry;
+using Microsoft.CmdPal.Core.Common.Services.Telemetry;
 using Microsoft.PowerToys.Telemetry;
 
 namespace Microsoft.CmdPal.UI.Events;
