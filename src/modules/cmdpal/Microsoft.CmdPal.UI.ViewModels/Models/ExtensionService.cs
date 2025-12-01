@@ -33,7 +33,7 @@ public partial class ExtensionService : IExtensionService, IDisposable
     private static readonly List<IExtensionWrapper> _installedExtensions = [];
     private static readonly List<IExtensionWrapper> _enabledExtensions = [];
 
-    public ExtensionService(ILogger<ExtensionService> logger)
+    public ExtensionService(ILogger logger)
     {
         _logger = logger;
         _catalog.PackageInstalling += Catalog_PackageInstalling;

@@ -14,9 +14,9 @@ namespace Microsoft.CmdPal.Core.ViewModels;
 
 public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
 {
-    public TaskScheduler Scheduler { get; private set; }
-
     private readonly ExtensionObject<IPage> _pageModel;
+
+    public TaskScheduler Scheduler { get; private set; } = TaskScheduler.FromCurrentSynchronizationContext();
 
     public bool IsLoading => ModelIsLoading || (!IsInitialized);
 
@@ -77,11 +77,10 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
 
     public IconInfoViewModel Icon { get; protected set; }
 
-    public PageViewModel(IPage? model, TaskScheduler scheduler, AppExtensionHost extensionHost, ILogger logger)
+    public PageViewModel(IPage? model, AppExtensionHost extensionHost, ILogger logger)
         : base((IPageContext?)null, logger)
     {
         _pageModel = new(model);
-        Scheduler = scheduler;
         PageContext = new(this);
         ExtensionHost = extensionHost;
         Icon = new(null);

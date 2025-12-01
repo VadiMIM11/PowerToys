@@ -10,7 +10,7 @@ using Microsoft.PowerToys.Telemetry;
 
 namespace Microsoft.CmdPal.UI.Services.Telemetry;
 
-internal class TelemetryService :
+internal sealed class TelemetryService :
     ITelemetryService,
     IRecipient<BeginInvokeMessage>,
     IRecipient<CmdPalInvokeResultMessage>

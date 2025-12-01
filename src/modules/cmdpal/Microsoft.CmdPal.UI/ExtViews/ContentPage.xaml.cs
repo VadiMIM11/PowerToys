@@ -5,6 +5,7 @@
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Core.ViewModels;
 using Microsoft.CmdPal.Core.ViewModels.Messages;
+using Microsoft.CmdPal.UI.Helpers.MarkdownImageProviders;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -28,10 +29,15 @@ public sealed partial class ContentPage : Page,
     public static readonly DependencyProperty ViewModelProperty =
         DependencyProperty.Register(nameof(ViewModel), typeof(ContentPageViewModel), typeof(ContentPage), new PropertyMetadata(null));
 
-    public ContentPage()
+    private readonly ImageProvider _imageProvider;
+
+    public ContentPage(ImageProvider imageProvider)
     {
         this.InitializeComponent();
         this.Unloaded += OnUnloaded;
+        _imageProvider = imageProvider;
+
+        ImageProviderFrame.Content = _imageProvider;
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)

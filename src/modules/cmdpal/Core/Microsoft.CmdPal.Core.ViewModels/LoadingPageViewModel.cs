@@ -9,8 +9,8 @@ namespace Microsoft.CmdPal.Core.ViewModels;
 
 public partial class LoadingPageViewModel : PageViewModel
 {
-    public LoadingPageViewModel(IPage? model, TaskScheduler scheduler, AppExtensionHost host, ILogger logger)
-        : base(model, scheduler, host, logger)
+    public LoadingPageViewModel(IPage? model, AppExtensionHost host, ILogger logger)
+        : base(model, host, logger)
     {
         ModelIsLoading = true;
         IsInitialized = false;

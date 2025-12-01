@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace Microsoft.CmdPal.UI.Helpers.MarkdownImageProviders;
 
-internal sealed partial class ImageProvider : IImageProvider
+public sealed partial class ImageProvider : IImageProvider
 {
     private readonly CompositeImageSourceProvider _compositeProvider = new();
     private readonly ILogger _logger;

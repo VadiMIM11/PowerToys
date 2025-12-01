@@ -6,5 +6,5 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.CmdPal.Core.ViewModels;
 
-internal sealed partial class NullPageViewModel(TaskScheduler scheduler, AppExtensionHost extensionHost, ILogger logger)
-    : PageViewModel(null, scheduler, extensionHost, logger);
+internal sealed partial class NullPageViewModel(AppExtensionHost extensionHost, ILogger logger)
+    : PageViewModel(null, extensionHost, logger);

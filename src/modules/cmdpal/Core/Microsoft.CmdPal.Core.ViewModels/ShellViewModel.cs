@@ -19,7 +19,7 @@ public partial class ShellViewModel : ObservableObject,
 {
     private readonly IRootPageService _rootPageService;
     private readonly AppExtensionHost _appHost;
-    private readonly TaskScheduler _scheduler;
+    private readonly TaskScheduler _scheduler = TaskScheduler.FromCurrentSynchronizationContext();
     private readonly IPageViewModelFactoryService _pageViewModelFactory;
     private readonly ILogger _logger;
     private readonly Lock _invokeLock = new();
@@ -85,20 +85,18 @@ public partial class ShellViewModel : ObservableObject,
     public PageViewModel NullPage { get; private set; }
 
     public ShellViewModel(
-        TaskScheduler scheduler,
         IRootPageService rootPageService,
         IPageViewModelFactoryService pageViewModelFactory,
         AppExtensionHost appHost,
         ILogger<ShellViewModel> logger)
     {
         _pageViewModelFactory = pageViewModelFactory;
-        _scheduler = scheduler;
         _rootPageService = rootPageService;
         _appHost = appHost;
         _logger = logger;
 
-        NullPage = new NullPageViewModel(_scheduler, _appHost, _logger);
-        _currentPage = new LoadingPageViewModel(null, _scheduler, _appHost, _logger);
+        NullPage = new NullPageViewModel(_appHost, _logger);
+        _currentPage = new LoadingPageViewModel(null, _appHost, _logger);
 
         // Register to receive messages
         WeakReferenceMessenger.Default.Register<PerformCommandMessage>(this);

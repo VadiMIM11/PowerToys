@@ -93,7 +93,7 @@ public partial class ListViewModel : PageViewModel, IDisposable
     }
 
     public ListViewModel(IListPage model, TaskScheduler scheduler, AppExtensionHost host, ILogger logger)
-        : base(model, scheduler, host, logger)
+        : base(model, host, logger)
     {
         _model = new(model);
         EmptyContent = new(new(null), PageContext, logger);

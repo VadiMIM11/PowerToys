@@ -11,8 +11,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:h="using:Microsoft.CmdPal.UI.Helpers"
     xmlns:help="using:Microsoft.CmdPal.UI.Helpers"
-    xmlns:labToolkit="using:CommunityToolkit.Labs.WinUI.MarkdownTextBlock"
-    xmlns:markdownImageProviders="using:Microsoft.CmdPal.UI.Helpers.MarkdownImageProviders"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tkcontrols="using:CommunityToolkit.WinUI.Controls"
     xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
@@ -163,7 +161,7 @@
                 x:Key="DefaultMarkdownThemeConfig"
                 H3FontSize="12"
                 H3FontWeight="Normal" />
-            <markdownImageProviders:ImageProvider x:Key="ImageProvider" />
+            <Frame x:Name="ImageProviderFrame"/>
             <tkcontrols:MarkdownConfig
                 x:Key="DefaultMarkdownConfig"
                 ImageProvider="{StaticResource ImageProvider}"
@@ -520,7 +518,7 @@
             Background="{ThemeResource LayerOnAcrylicSecondaryBackgroundBrush}"
             BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
             BorderThickness="0,1,0,0">
-            <cpcontrols:CommandBar CurrentPageViewModel="{x:Bind viewModel.CurrentPage, Mode=OneWay}" />
+            <Frame x:Name="CommandBarFrame"/>
         </Grid>
 
         <VisualStateManager.VisualStateGroups>

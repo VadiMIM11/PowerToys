@@ -11,12 +11,11 @@ namespace Microsoft.CmdPal.UI.ViewModels;
 public class CommandPalettePageViewModelFactory
     : IPageViewModelFactoryService
 {
-    private readonly TaskScheduler _scheduler;
+    private readonly TaskScheduler _scheduler = TaskScheduler.FromCurrentSynchronizationContext();
     private readonly ILogger _logger;
 
-    public CommandPalettePageViewModelFactory(TaskScheduler scheduler, ILogger logger)
+    public CommandPalettePageViewModelFactory(ILogger logger)
     {
-        _scheduler = scheduler;
         _logger = logger;
     }
 
@@ -25,7 +24,7 @@ public class CommandPalettePageViewModelFactory
         return page switch
         {
             IListPage listPage => new ListViewModel(listPage, _scheduler, host, _logger) { IsNested = nested },
-            IContentPage contentPage => new CommandPaletteContentPageViewModel(contentPage, _scheduler, host, _logger),
+            IContentPage contentPage => new CommandPaletteContentPageViewModel(contentPage, host, _logger),
             _ => null,
         };
     }

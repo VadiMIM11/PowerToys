@@ -38,7 +38,6 @@ public partial class MainListPage : DynamicListPage,
         "com.microsoft.cmdpal.builtin.datetime",
     ];
 
-    private readonly IServiceProvider _serviceProvider;
     private readonly TopLevelCommandManager _tlcManager;
     private List<Scored<IListItem>>? _filteredItems;
     private List<Scored<IListItem>>? _filteredApps;
@@ -53,14 +52,13 @@ public partial class MainListPage : DynamicListPage,
 
     private CancellationTokenSource? _cancellationTokenSource;
 
-    public MainListPage(IServiceProvider serviceProvider)
+    public MainListPage(TopLevelCommandManager topLevelCommandManager, SettingsModel settingsModel)
     {
         Title = Resources.builtin_home_name;
         Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.scale-200.png");
         PlaceholderText = Properties.Resources.builtin_main_list_page_searchbar_placeholder;
-        _serviceProvider = serviceProvider;
 
-        _tlcManager = _serviceProvider.GetService<TopLevelCommandManager>()!;
+        _tlcManager = topLevelCommandManager;
         _tlcManager.PropertyChanged += TlcManager_PropertyChanged;
         _tlcManager.TopLevelCommands.CollectionChanged += Commands_CollectionChanged;
 
@@ -78,7 +76,7 @@ public partial class MainListPage : DynamicListPage,
         WeakReferenceMessenger.Default.Register<ClearSearchMessage>(this);
         WeakReferenceMessenger.Default.Register<UpdateFallbackItemsMessage>(this);
 
-        var settings = _serviceProvider.GetService<SettingsModel>()!;
+        var settings = settingsModel;
         settings.SettingsChanged += SettingsChangedHandler;
         HotReloadSettings(settings);
         _includeApps = _tlcManager.IsProviderActive(AllAppsCommandProvider.WellKnownId);

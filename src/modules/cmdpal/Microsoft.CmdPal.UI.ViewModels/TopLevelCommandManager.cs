@@ -23,9 +23,9 @@ public partial class TopLevelCommandManager : ObservableObject,
     IPageContext,
     IDisposable
 {
-    private readonly TaskScheduler _taskScheduler;
+    private readonly TaskScheduler _taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
     private readonly ILogger _logger;
-    private readonly CommandPaletteHost _commandPaletteHost;
+    private readonly AppExtensionHost _commandPaletteHost;
     private readonly IExtensionService _extensionService;
     private readonly IEnumerable<ICommandProvider> _builtInProviders;
     private readonly SettingsModel _settingsModel;
@@ -40,8 +40,7 @@ public partial class TopLevelCommandManager : ObservableObject,
     TaskScheduler IPageContext.Scheduler => _taskScheduler;
 
     public TopLevelCommandManager(
-        TaskScheduler taskScheduler,
-        CommandPaletteHost commandPaletteHost,
+        AppExtensionHost commandPaletteHost,
         IExtensionService extensionService,
         IEnumerable<ICommandProvider> builtInProviders,
         SettingsModel settingsModel,
@@ -49,7 +48,6 @@ public partial class TopLevelCommandManager : ObservableObject,
         HotkeyManager hotkeyManager,
         ILogger logger)
     {
-        _taskScheduler = taskScheduler;
         _logger = logger;
         _commandPaletteHost = commandPaletteHost;
         _extensionService = extensionService;

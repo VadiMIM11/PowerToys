@@ -49,8 +49,8 @@ public partial class ContentPageViewModel : PageViewModel, ICommandBarContext
 
     // Remember - "observable" properties from the model (via PropChanged)
     // cannot be marked [ObservableProperty]
-    public ContentPageViewModel(IContentPage model, TaskScheduler scheduler, AppExtensionHost host, ILogger logger)
-        : base(model, scheduler, host, logger)
+    public ContentPageViewModel(IContentPage model, AppExtensionHost host, ILogger logger)
+        : base(model, host, logger)
     {
         _model = new(model);
         _logger = logger;

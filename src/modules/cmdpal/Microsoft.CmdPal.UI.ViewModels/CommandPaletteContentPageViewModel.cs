@@ -8,8 +8,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class CommandPaletteContentPageViewModel(IContentPage model, TaskScheduler scheduler, AppExtensionHost host, ILogger logger)
-        : ContentPageViewModel(model, scheduler, host, logger)
+public partial class CommandPaletteContentPageViewModel(IContentPage model, AppExtensionHost host, ILogger logger)
+        : ContentPageViewModel(model, host, logger)
 {
     public override ContentViewModel? ViewModelFromContent(IContent content, WeakReference<IPageContext> context)
     {

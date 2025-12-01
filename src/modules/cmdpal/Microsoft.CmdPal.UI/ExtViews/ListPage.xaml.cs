@@ -31,8 +31,9 @@ public sealed partial class ListPage : Page,
     IRecipient<ActivateSecondaryCommandMessage>
 {
     private readonly SettingsModel settings;
-    public readonly ILogger Logger;
     private InputSource _lastInputSource;
+
+    public ILogger Logger { get; private set; }
 
     internal ListViewModel? ViewModel
     {

@@ -178,7 +178,7 @@
                                                 IsIndeterminate="True" />
                                         </controls:Case>
                                         <controls:Case Value="False">
-                                            <cmdpalUI:ContentPage ViewModel="{x:Bind ViewModel.SettingsPage, Mode=OneWay}" />
+                                            <Frame x:Name="SettingsContentFrame"/>
                                         </controls:Case>
                                     </controls:SwitchPresenter>
                                 </Frame>

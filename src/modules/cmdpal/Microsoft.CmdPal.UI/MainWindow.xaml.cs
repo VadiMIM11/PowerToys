@@ -14,6 +14,7 @@ using Microsoft.CmdPal.Ext.ClipboardHistory.Messages;
 using Microsoft.CmdPal.UI.Events;
 using Microsoft.CmdPal.UI.Helpers;
 using Microsoft.CmdPal.UI.Messages;
+using Microsoft.CmdPal.UI.Pages;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.Extensions.Logging;
@@ -61,6 +62,7 @@ public sealed partial class MainWindow : WindowEx,
     private readonly SettingsModel _settingsModel;
     private readonly TrayIconService _trayIconService;
     private readonly IExtensionService _extensionService;
+    private readonly ShellPage _shellPage;
     private bool _ignoreHotKeyWhenFullScreen = true;
 
     private DesktopAcrylicController? _acrylicController;
@@ -68,13 +70,14 @@ public sealed partial class MainWindow : WindowEx,
 
     private WindowPosition _currentWindowPosition = new();
 
-    public MainWindow(SettingsModel settingsModel, TrayIconService trayIconService, IExtensionService extensionService, ILogger logger)
+    public MainWindow(ShellPage shellPage, SettingsModel settingsModel, TrayIconService trayIconService, IExtensionService extensionService, ILogger logger)
     {
         InitializeComponent();
 
         _settingsModel = settingsModel;
         _trayIconService = trayIconService;
         _extensionService = extensionService;
+        _shellPage = shellPage;
         _hwnd = new HWND(WinRT.Interop.WindowNative.GetWindowHandle(this).ToInt32());
 
         _hiddenOwnerBehavior.ShowInTaskbar(this, Debugger.IsAttached);
@@ -101,6 +104,8 @@ public sealed partial class MainWindow : WindowEx,
         WeakReferenceMessenger.Default.Register<ShowWindowMessage>(this);
         WeakReferenceMessenger.Default.Register<HideWindowMessage>(this);
 
+        MainFrame.Content = _shellPage;
+
         // Hide our titlebar.
         // We need to both ExtendsContentIntoTitleBar, then set the height to Collapsed
         // to hide the old caption buttons. Then, in UpdateRegionsForCustomTitleBar,
@@ -108,7 +113,7 @@ public sealed partial class MainWindow : WindowEx,
         ExtendsContentIntoTitleBar = true;
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Collapsed;
         SizeChanged += WindowSizeChanged;
-        RootShellPage.Loaded += RootShellPage_Loaded;
+        _shellPage.Loaded += RootShellPage_Loaded;
 
         WM_TASKBAR_RESTART = PInvoke.RegisterWindowMessage("TaskbarCreated");
 
@@ -125,7 +130,7 @@ public sealed partial class MainWindow : WindowEx,
         _settingsModel.SettingsChanged += SettingsChangedHandler;
 
         // Make sure that we update the acrylic theme when the OS theme changes
-        RootShellPage.ActualThemeChanged += (s, e) => DispatcherQueue.TryEnqueue(UpdateAcrylic);
+        _shellPage.ActualThemeChanged += (s, e) => DispatcherQueue.TryEnqueue(UpdateAcrylic);
 
         // Hardcoding event name to avoid bringing in the PowerToys.interop dependency. Event name must match CMDPAL_SHOW_EVENT from shared_constants.h
         NativeEventWaiter.WaitForEventLoop("Local\\PowerToysCmdPal-ShowEvent-62336fcd-8611-4023-9b30-091a6af4cc5a", () =>
@@ -510,28 +515,28 @@ public sealed partial class MainWindow : WindowEx,
     private void UpdateRegionsForCustomTitleBar()
     {
         // Specify the interactive regions of the title bar.
-        var scaleAdjustment = RootShellPage.XamlRoot.RasterizationScale;
+        var scaleAdjustment = _shellPage.XamlRoot.RasterizationScale;
 
         // Get the rectangle around our XAML content. We're going to mark this
         // rectangle as "Passthrough", so that the normal window operations
         // (resizing, dragging) don't apply in this space.
-        var transform = RootShellPage.TransformToVisual(null);
+        var transform = _shellPage.TransformToVisual(null);
 
         // Reserve 16px of space at the top for dragging.
         var topHeight = 16;
         var bounds = transform.TransformBounds(new Rect(
             0,
             topHeight,
-            RootShellPage.ActualWidth,
-            RootShellPage.ActualHeight));
+            _shellPage.ActualWidth,
+            _shellPage.ActualHeight));
         var contentRect = GetRect(bounds, scaleAdjustment);
         var rectArray = new RectInt32[] { contentRect };
         var nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(this.AppWindow.Id);
         nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray);
 
         // Add a drag-able region on top
-        var w = RootShellPage.ActualWidth;
-        _ = RootShellPage.ActualHeight;
+        var w = _shellPage.ActualWidth;
+        _ = _shellPage.ActualHeight;
         var dragSides = new RectInt32[]
         {
             GetRect(new Rect(0, 0, w, topHeight), scaleAdjustment), // the top, {topHeight=16} tall

@@ -12,7 +12,6 @@
     xmlns:coreViewModels="using:Microsoft.CmdPal.Core.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:Microsoft.CmdPal.UI"
-    xmlns:markdownImageProviders="using:Microsoft.CmdPal.UI.Helpers.MarkdownImageProviders"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tkcontrols="using:CommunityToolkit.WinUI.Controls"
     xmlns:viewModels="using:Microsoft.CmdPal.UI.ViewModels"
@@ -25,7 +24,7 @@
                 x:Key="DefaultMarkdownThemeConfig"
                 H3FontSize="12"
                 H3FontWeight="Normal" />
-            <markdownImageProviders:ImageProvider x:Key="ImageProvider" />
+            <Frame x:Name="ImageProviderFrame"/>
             <tkcontrols:MarkdownConfig
                 x:Key="DefaultMarkdownConfig"
                 ImageProvider="{StaticResource ImageProvider}"

@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using CommunityToolkit.WinUI.Controls;
 using Microsoft.CmdPal.Core.Common.Helpers;
 using Microsoft.CmdPal.Core.Common.Services;
 using Microsoft.CmdPal.Core.Common.Services.Telemetry;
@@ -24,6 +25,7 @@ using Microsoft.CmdPal.Ext.WinGet;
 using Microsoft.CmdPal.UI.Controls;
 using Microsoft.CmdPal.UI.Events;
 using Microsoft.CmdPal.UI.Helpers;
+using Microsoft.CmdPal.UI.Helpers.MarkdownImageProviders;
 using Microsoft.CmdPal.UI.Pages;
 using Microsoft.CmdPal.UI.Services;
 using Microsoft.CmdPal.UI.Services.Telemetry;
@@ -72,7 +74,6 @@ internal sealed partial class Program
         ServiceCollection services = new();
 
         // Root services
-        services.AddSingleton(TaskScheduler.FromCurrentSynchronizationContext());
         services.AddSingleton<ILogger>(_logger);
         services.AddSingleton<LocalKeyboardListener>();
 
@@ -133,17 +134,17 @@ internal sealed partial class Program
         services.AddSingleton<ICommandProvider, TimeDateCommandsProvider>();
         services.AddSingleton<ICommandProvider, SystemCommandExtensionProvider>();
 
-        // Extensions
+        // Helpers
+        services.AddSingleton<IImageProvider, ImageProvider>();
 
         // ViewModels
         services.AddSingleton<ShellViewModel>();
         services.AddSingleton<IPageViewModelFactoryService, CommandPalettePageViewModelFactory>();
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<CommandBarViewModel>();
-        services.AddTransient<ContextMenuViewModel>();
 
         // Controls
-        services.AddTransient<ContextMenu>();
+        services.AddTransient<CommandBar>();
 
         // Views
         // App & MainWindow are singletons to ensure only one instance of each exists.
@@ -151,6 +152,7 @@ internal sealed partial class Program
         services.AddSingleton<App>();
         services.AddSingleton<MainWindow>();
 
+        services.AddTransient<ContentPage>();
         services.AddTransient<GeneralPage>();
         services.AddTransient<ExtensionsPage>();
         services.AddTransient<ExtensionPage>();

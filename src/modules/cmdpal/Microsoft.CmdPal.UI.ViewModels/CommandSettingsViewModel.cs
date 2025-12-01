@@ -31,7 +31,7 @@ public partial class CommandSettingsViewModel(ICommandSettings? _unsafeSettings,
 
         if (model.SettingsPage is not null)
         {
-            SettingsPage = new CommandPaletteContentPageViewModel(model.SettingsPage, mainThread, provider.ExtensionHost, logger);
+            SettingsPage = new CommandPaletteContentPageViewModel(model.SettingsPage, provider.ExtensionHost, logger);
             SettingsPage.InitializeProperties();
         }
     }

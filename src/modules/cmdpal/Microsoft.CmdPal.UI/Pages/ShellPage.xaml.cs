@@ -12,6 +12,7 @@ using Microsoft.CmdPal.Core.ViewModels;
 using Microsoft.CmdPal.Core.ViewModels.Messages;
 using Microsoft.CmdPal.UI.Events;
 using Microsoft.CmdPal.UI.Helpers;
+using Microsoft.CmdPal.UI.Helpers.MarkdownImageProviders;
 using Microsoft.CmdPal.UI.Messages;
 using Microsoft.CmdPal.UI.Settings;
 using Microsoft.CmdPal.UI.ViewModels;
@@ -21,6 +22,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using Windows.UI.Core;
@@ -51,7 +53,7 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
 {
     private readonly ShellViewModel viewModel;
     private readonly ILogger _logger;
-    private readonly TaskScheduler _mainTaskScheduler;
+    private readonly TaskScheduler _mainTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
     private readonly SettingsModel _settings;
     private readonly TopLevelCommandManager _topLevelCommandManager;
     private readonly ITelemetryService _telemetry;
@@ -65,6 +67,9 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
 
     private readonly CompositeFormat _pageNavigatedAnnouncement;
 
+    private readonly CommandBar _commandBar;
+    private readonly ImageProvider _imageProvider;
+
     private SettingsWindow? _settingsWindow;
 
     private CancellationTokenSource? _focusAfterLoadedCts;
@@ -73,21 +78,34 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public ShellPage(
-        TaskScheduler taskScheduler,
         ShellViewModel shellViewModel,
         SettingsModel settingsModel,
         TopLevelCommandManager topLevelCommandManager,
         ITelemetryService telemetryService,
+        CommandBar commandBar,
+        ImageProvider imageProvider,
         ILogger logger)
     {
         this.InitializeComponent();
 
         _logger = logger;
-        _mainTaskScheduler = taskScheduler;
         viewModel = shellViewModel;
         _settings = settingsModel;
         _topLevelCommandManager = topLevelCommandManager;
         _telemetry = telemetryService;
+        _commandBar = commandBar;
+        _imageProvider = imageProvider;
+
+        var commandBarBinding = new Binding()
+        {
+            Source = viewModel.CurrentPage,
+            Mode = BindingMode.OneWay,
+        };
+        _commandBar.SetBinding(
+            Microsoft.UI.Xaml.Controls.Control.DataContextProperty,
+            commandBarBinding);
+
+        ImageProviderFrame.Content = _imageProvider;
 
         // how we are doing navigation around
         WeakReferenceMessenger.Default.Register<NavigateBackMessage>(this);
