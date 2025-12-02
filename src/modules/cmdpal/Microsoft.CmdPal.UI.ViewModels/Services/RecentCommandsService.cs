@@ -5,18 +5,14 @@
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Microsoft.CmdPal.UI.ViewModels;
+namespace Microsoft.CmdPal.UI.ViewModels.Services;
 
-public partial class RecentCommandsManager : ObservableObject, IRecentCommandsManager
+public partial class RecentCommandsService : ObservableObject, IRecentCommandsService
 {
     [JsonInclude]
     internal List<HistoryItem> History { get; set; } = [];
 
     private readonly Lock _lock = new();
-
-    public RecentCommandsManager()
-    {
-    }
 
     public int GetCommandHistoryWeight(string commandId)
     {
@@ -81,7 +77,7 @@ public partial class RecentCommandsManager : ObservableObject, IRecentCommandsMa
     }
 }
 
-public interface IRecentCommandsManager
+public interface IRecentCommandsService
 {
     int GetCommandHistoryWeight(string commandId);
 

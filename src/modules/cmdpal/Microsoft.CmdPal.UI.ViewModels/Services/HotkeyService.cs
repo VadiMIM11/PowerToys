@@ -5,16 +5,16 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.CmdPal.UI.ViewModels.Settings;
 
-namespace Microsoft.CmdPal.UI.ViewModels;
+namespace Microsoft.CmdPal.UI.ViewModels.Services;
 
-public partial class HotkeyManager : ObservableObject
+public partial class HotkeyService : ObservableObject
 {
-    private readonly TopLevelCommandManager _topLevelCommandManager;
+    private readonly TopLevelCommandService _topLevelCommandService;
     private readonly List<TopLevelHotkey> _commandHotkeys;
 
-    public HotkeyManager(TopLevelCommandManager tlcManager, SettingsModel settings)
+    public HotkeyService(TopLevelCommandService topLevelCommandService, SettingsModel settings)
     {
-        _topLevelCommandManager = tlcManager;
+        _topLevelCommandService = topLevelCommandService;
         _commandHotkeys = settings.CommandHotkeys;
     }
 

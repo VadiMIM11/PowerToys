@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Microsoft.CmdPal.Core.Common.Services;
 using Microsoft.CmdPal.Core.ViewModels;
-using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.MainPage;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.Extensions.Logging;
@@ -14,34 +13,34 @@ using WinRT;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
-namespace Microsoft.CmdPal.UI.Services;
+namespace Microsoft.CmdPal.UI.ViewModels.Services;
 
 internal sealed partial class PowerToysRootPageService : IRootPageService
 {
     private readonly ILogger logger;
-    private readonly TopLevelCommandManager _topLevelCommandManager;
+    private readonly TopLevelCommandService _topLevelCommandService;
     private IExtensionWrapper? _activeExtension;
     private Lazy<MainListPage> _mainListPage;
 
     public PowerToysRootPageService(
-        TopLevelCommandManager topLevelCommandManager,
-        AliasManager aliasManager,
+        TopLevelCommandService topLevelCommandService,
+        AliasService aliasService,
         SettingsModel settingsModel,
         AppStateModel appStateModel,
         ILogger logger)
     {
         this.logger = logger;
-        _topLevelCommandManager = topLevelCommandManager;
+        _topLevelCommandService = topLevelCommandService;
 
         _mainListPage = new Lazy<MainListPage>(() =>
         {
-            return new MainListPage(topLevelCommandManager, settingsModel, aliasManager, appStateModel);
+            return new MainListPage(_topLevelCommandService, settingsModel, aliasService, appStateModel);
         });
     }
 
     public async Task PreLoadAsync()
     {
-        await _topLevelCommandManager.LoadBuiltinsAsync();
+        await _topLevelCommandService.LoadBuiltinsAsync();
     }
 
     public IPage GetRootPage()
@@ -52,10 +51,10 @@ internal sealed partial class PowerToysRootPageService : IRootPageService
     public async Task PostLoadRootPageAsync()
     {
         // After loading built-ins, and starting navigation, kick off a thread to load extensions.
-        _topLevelCommandManager.LoadExtensionsCommand.Execute(null);
+        _topLevelCommandService.LoadExtensionsCommand.Execute(null);
 
-        await _topLevelCommandManager.LoadExtensionsCommand.ExecutionTask!;
-        if (_topLevelCommandManager.LoadExtensionsCommand.ExecutionTask.Status != TaskStatus.RanToCompletion)
+        await _topLevelCommandService.LoadExtensionsCommand.ExecutionTask!;
+        if (_topLevelCommandService.LoadExtensionsCommand.ExecutionTask.Status != TaskStatus.RanToCompletion)
         {
             // TODO: Handle failure case
         }

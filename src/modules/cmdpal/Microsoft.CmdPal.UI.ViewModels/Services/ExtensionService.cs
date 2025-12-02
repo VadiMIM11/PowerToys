@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.CmdPal.Core.Common.Services;
+using Microsoft.CmdPal.UI.ViewModels.Models;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.Extensions.Logging;
 using Windows.ApplicationModel;
@@ -10,7 +11,7 @@ using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
-namespace Microsoft.CmdPal.UI.ViewModels.Models;
+namespace Microsoft.CmdPal.UI.ViewModels.Services;
 
 public partial class ExtensionService : IExtensionService, IDisposable
 {

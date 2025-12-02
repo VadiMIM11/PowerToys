@@ -13,13 +13,14 @@ using Microsoft.CmdPal.Core.Common.Helpers;
 using Microsoft.CmdPal.Core.Common.Services;
 using Microsoft.CmdPal.Core.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
+using Microsoft.CmdPal.UI.ViewModels.Services;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.CmdPal.UI.ViewModels;
+namespace Microsoft.CmdPal.UI.ViewModels.ViewModels;
 
-public partial class TopLevelCommandManager : ObservableObject,
+public partial class TopLevelCommandService : ObservableObject,
     IRecipient<ReloadCommandsMessage>,
     IPageContext,
     IDisposable
@@ -30,8 +31,8 @@ public partial class TopLevelCommandManager : ObservableObject,
     private readonly IExtensionService _extensionService;
     private readonly IEnumerable<ICommandProvider> _builtInProviders;
     private readonly SettingsModel _settingsModel;
-    private readonly AliasManager _aliasManager;
-    private readonly HotkeyManager _hotkeyManager;
+    private readonly AliasService _aliasService;
+    private readonly HotkeyService _hotkeyService;
 
     private readonly List<CommandProviderWrapper> _builtInCommands = [];
     private readonly List<CommandProviderWrapper> _extensionCommandProviders = [];
@@ -40,14 +41,14 @@ public partial class TopLevelCommandManager : ObservableObject,
 
     TaskScheduler IPageContext.Scheduler => _taskScheduler;
 
-    public TopLevelCommandManager(
+    public TopLevelCommandService(
         TaskScheduler taskScheduler,
         AppExtensionHost commandPaletteHost,
         IExtensionService extensionService,
         IEnumerable<ICommandProvider> builtInProviders,
         SettingsModel settingsModel,
-        AliasManager aliasManager,
-        HotkeyManager hotkeyManager,
+        AliasService aliasService,
+        HotkeyService hotkeyService,
         ILogger logger)
     {
         this.logger = logger;
@@ -55,8 +56,8 @@ public partial class TopLevelCommandManager : ObservableObject,
         _extensionService = extensionService;
         _builtInProviders = builtInProviders;
         _settingsModel = settingsModel;
-        _aliasManager = aliasManager;
-        _hotkeyManager = hotkeyManager;
+        _aliasService = aliasService;
+        _hotkeyService = hotkeyService;
         _taskScheduler = taskScheduler;
         WeakReferenceMessenger.Default.Register<ReloadCommandsMessage>(this);
         _reloadCommandsGate = new(ReloadAllCommandsAsyncCore);
@@ -92,7 +93,7 @@ public partial class TopLevelCommandManager : ObservableObject,
         // owned by our ServiceProvider.
         foreach (var provider in _builtInProviders)
         {
-            CommandProviderWrapper wrapper = new(provider, _taskScheduler, logger, _aliasManager, _hotkeyManager);
+            CommandProviderWrapper wrapper = new(provider, _taskScheduler, logger, _aliasService, _hotkeyService);
             lock (_commandProvidersLock)
             {
                 _builtInCommands.Add(wrapper);

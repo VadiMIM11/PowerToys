@@ -6,18 +6,18 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Core.ViewModels.Messages;
 
-namespace Microsoft.CmdPal.UI.ViewModels;
+namespace Microsoft.CmdPal.UI.ViewModels.Services;
 
-public partial class AliasManager : ObservableObject
+public partial class AliasService : ObservableObject
 {
-    private readonly TopLevelCommandManager _topLevelCommandManager;
+    private readonly TopLevelCommandService _topLevelCommandService;
 
     // REMEMBER, CommandAlias.SearchPrefix is what we use as keys
     private readonly Dictionary<string, CommandAlias> _aliases;
 
-    public AliasManager(TopLevelCommandManager tlcManager, SettingsModel settings)
+    public AliasService(TopLevelCommandService tlcService, SettingsModel settings)
     {
-        _topLevelCommandManager = tlcManager;
+        _topLevelCommandService = tlcService;
         _aliases = settings.Aliases;
 
         if (_aliases.Count == 0)
@@ -34,7 +34,7 @@ public partial class AliasManager : ObservableObject
         {
             try
             {
-                var topLevelCommand = _topLevelCommandManager.LookupCommand(alias.CommandId);
+                var topLevelCommand = _topLevelCommandService.LookupCommand(alias.CommandId);
                 if (topLevelCommand is not null)
                 {
                     WeakReferenceMessenger.Default.Send<ClearSearchMessage>();
@@ -112,7 +112,7 @@ public partial class AliasManager : ObservableObject
                 toRemove.Add(kv.Value);
 
                 // Remove alias from other TopLevelViewModels it may be assigned to
-                var topLevelCommand = _topLevelCommandManager.LookupCommand(kv.Value.CommandId);
+                var topLevelCommand = _topLevelCommandService.LookupCommand(kv.Value.CommandId);
                 if (topLevelCommand is not null)
                 {
                     topLevelCommand.AliasText = string.Empty;

@@ -7,9 +7,8 @@ using ManagedCommon;
 using Microsoft.Extensions.Logging;
 using Windows.Win32;
 using Windows.Win32.Foundation;
-using Windows.Win32.UI.WindowsAndMessaging;
 
-namespace Microsoft.CmdPal.UI.Services;
+namespace Microsoft.CmdPal.UI.ViewModels.Services;
 
 // Adapter implementing Microsoft.Extensions.Logging.ILogger,
 // delegating to ManagedCommon.Logger.

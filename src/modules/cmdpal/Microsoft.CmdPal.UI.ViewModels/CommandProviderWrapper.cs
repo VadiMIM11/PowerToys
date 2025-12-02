@@ -5,6 +5,7 @@
 using Microsoft.CmdPal.Core.Common.Services;
 using Microsoft.CmdPal.Core.ViewModels;
 using Microsoft.CmdPal.Core.ViewModels.Models;
+using Microsoft.CmdPal.UI.ViewModels.Services;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.Extensions.Logging;
 using Windows.Foundation;
@@ -14,8 +15,8 @@ namespace Microsoft.CmdPal.UI.ViewModels;
 public sealed partial class CommandProviderWrapper
 {
     private readonly ILogger logger;
-    private readonly HotkeyManager _hotkeyManager;
-    private readonly AliasManager _aliasManager;
+    private readonly HotkeyService _hotkeyService;
+    private readonly AliasService _aliasService;
 
     public bool IsExtension => Extension is not null;
 
@@ -53,15 +54,15 @@ public sealed partial class CommandProviderWrapper
         }
     }
 
-    public CommandProviderWrapper(ICommandProvider provider, TaskScheduler mainThread, ILogger logger, AliasManager aliasManager, HotkeyManager hotkeyManager)
+    public CommandProviderWrapper(ICommandProvider provider, TaskScheduler mainThread, ILogger logger, AliasService aliasService, HotkeyService hotkeyService)
     {
         // This ctor is only used for in-proc builtin commands. So the Unsafe!
         // calls are pretty dang safe actually.
         _commandProvider = new(provider);
         _taskScheduler = mainThread;
         this.logger = logger;
-        _aliasManager = aliasManager;
-        _hotkeyManager = hotkeyManager;
+        _aliasService = aliasService;
+        _hotkeyService = hotkeyService;
 
         // Hook the extension back into us
         ExtensionHost = new CommandPaletteHost(provider, logger);
@@ -82,12 +83,12 @@ public sealed partial class CommandProviderWrapper
         Log_CommandProviderInitialized(ProviderId);
     }
 
-    public CommandProviderWrapper(IExtensionWrapper extension, TaskScheduler mainThread, ILogger logger, AliasManager aliasManager, HotkeyManager hotkeyManager)
+    public CommandProviderWrapper(IExtensionWrapper extension, TaskScheduler mainThread, ILogger logger, AliasService aliasService, HotkeyService hotkeyService)
     {
         _taskScheduler = mainThread;
         this.logger = logger;
-        _aliasManager = aliasManager;
-        _hotkeyManager = hotkeyManager;
+        _aliasService = aliasService;
+        _hotkeyService = hotkeyService;
 
         Extension = extension;
         ExtensionHost = new CommandPaletteHost(extension, logger);
@@ -190,7 +191,7 @@ public sealed partial class CommandProviderWrapper
         Func<ICommandItem?, bool, TopLevelViewModel> makeAndAdd = (ICommandItem? i, bool fallback) =>
         {
             CommandItemViewModel commandItemViewModel = new(new(i), pageContext, logger);
-            TopLevelViewModel topLevelViewModel = new(commandItemViewModel, fallback, ExtensionHost, ProviderId, settings, _hotkeyManager, _aliasManager, providerSettings);
+            TopLevelViewModel topLevelViewModel = new(commandItemViewModel, fallback, ExtensionHost, ProviderId, settings, _hotkeyService, _aliasService, providerSettings);
             topLevelViewModel.InitializeProperties();
 
             return topLevelViewModel;

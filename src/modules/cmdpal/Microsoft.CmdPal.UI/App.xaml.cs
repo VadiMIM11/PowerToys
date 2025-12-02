@@ -160,9 +160,9 @@ public partial class App : Application
         services.AddSingleton<ICommandProvider, RemoteDesktopCommandProvider>();
 
         // Models
-        services.AddSingleton<TopLevelCommandManager>();
-        services.AddSingleton<AliasManager>();
-        services.AddSingleton<HotkeyManager>();
+        services.AddSingleton<TopLevelCommandService>();
+        services.AddSingleton<AliasService>();
+        services.AddSingleton<HotkeyService>();
         services.AddSingleton<IExtensionService, ExtensionService>();
         services.AddSingleton<TrayIconService>();
         services.AddSingleton<IRunHistoryService, RunHistoryService>();
