@@ -40,10 +40,24 @@
             editor.updateOptions({minimap: {enabled: minimap}});
         }
 
+        console.log("Test. 12/3/2025 version 5:00pm")
         function runCopyCommand() {
             editor.focus();
             document.execCommand('copy');
         }
+
+        document.addEventListener("keydown", function (e) {
+            console.log("Key pressed", e.key);
+            try {
+            var key = (e.key || "").toLowerCase();
+            if ((e.ctrlKey || e.metaKey) && key === "c") {
+                console.log("Ctrl/Cmd+C detected, copying to clipboard");
+            }
+            } catch (err) {
+            // swallow any errors to avoid breaking the previewer
+            console.error("Error handling Ctrl/Cmd+C:", err);
+            }
+        });
 
     </script>
     <!-- Set browser to Edge-->
